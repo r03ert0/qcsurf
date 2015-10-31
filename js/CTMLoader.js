@@ -72,7 +72,7 @@ THREE.CTMLoader.prototype.load = function( url, callback, parameters ) {
 				var binaryData = new Uint8Array(xhr.response);
 				var s = Date.now();
 				if ( parameters.useWorker ) {
-					var worker = parameters.worker || new Worker( "CTMWorker.js" );
+					var worker = parameters.worker || new Worker( "js/CTMWorker.js" );
 					worker.onmessage = function( event ) {
 						var files = event.data;
 						for ( var i = 0; i < files.length; i ++ ) {

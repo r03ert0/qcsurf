@@ -4,7 +4,7 @@
 */
 
 var MyLoginWidget = {
-	root:"mylogin/",
+	root:"js/mylogin/",
 	username:"",
 	loggedin:0,
 	verbose:0,
