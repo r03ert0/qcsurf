@@ -3,19 +3,19 @@ html,body {
 	width:100%;
 	height:100%;
 	font-family:sans-serif;
+	font-size:0.9rem;
 }
-table {
-	border:thin solid black;
-	width:100%;
-}
+
+/* Global GUI layout */
 #toolbar {
 	position:absolute;
 	top:0;
 	left:0;
 	padding:10px;
-	width: calc( 100% - 20px);
-	height: calc( 5rem -20px);
-	background-color:#fff;
+	width: calc( 100% - 20px );
+	height: calc( 5rem );
+	background-color:#333;
+	color:white;
 }
 #subjects {
 	position:absolute;
@@ -23,7 +23,7 @@ table {
 	left:0;
 	height:calc( 100% - 8rem );
 	width:300px;
-	background-color:#f7f7ff;
+    background-color:#ddd;
 	overflow-y:scroll;
 }
 #viewer {
@@ -57,18 +57,51 @@ table {
 	position:absolute;
 	bottom:0;
 	left:0;
-	height:3rem;
-	width:100%;
-	background-color:#fafaff;
+	padding:5px;
+	width: calc( 100% - 10px );
+	height: calc( 3rem - 10px );
+	color:white;
+	background-color:#333;
+	text-align:right;
 }
+
+/* Table */
+#qctable
+{
+	width:300px;
+	color:black;
+	border-collapse:collapse;
+	line-height:125%;
+}
+#qctable td, #qctable th 
+{
+	border:1px solid grey;
+}
+#qctable th 
+{
+	text-align:left;
+	background-color:#ccc;
+	border-bottom:1px solid grey
+}
+#qctable tr:nth-child(even)
+{
+    background-color:#eee;
+}
+#qctable tr:nth-child(odd)
+{
+    background-color:#ddd;
+}
+
+/* App name */
 h1 {
 	font-family:serif;
 	display:inline;
-	color:#555;
+	color:white;
 }
 
 .selected {
 	background-color:lightBlue !important;
+	color:black;
 }
 .button, .menu {
 	padding:5px;
