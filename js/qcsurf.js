@@ -135,9 +135,9 @@ function loadMesh() {
 				scene.remove(scene.children[0]);
 			scene.add( mesh );
 			$("#overlay").html(
-				sub[indexSelected].id+"<br/>"+
+				"<b>"+sub[indexSelected].id+"<br/>"+
 				((hemisphere=="lh")?"Left Hemisphere":"Right Hemisphere")+"<br/>"+
-				((surface=="pial")?"Pial Surface":"White Matter Surface")+"<br/>"
+				((surface=="pial")?"Pial Surface":"White Matter Surface")+"<br/></b>"
 			);
 			loadStats();
 		},
@@ -163,23 +163,60 @@ function loadStats() {
 			var tsurf={};
 			var thick={};
 			var i;
+
+			$("#overlay").append("<br />");
 			commn["Total Vertices"]=parseInt(lines[18].split(",")[3]);
 			commn["Total Surface Area"]=parseFloat(lines[19].split(",")[3]);
 			commn["Mean Cortical Thickness"]=parseFloat(lines[20].split(",")[3]);
+			for(i in commn)
+				$("#overlay").append(i+": "+commn[i]+"<br/>");
+
 			for(i=53;i<86;i++) {
 				tsurf[lines[i].split(/[ ]+/)[0]]=parseFloat(lines[i].split(/[ ]+/)[2]);
-				thick[lines[i].split(/[ ]+/)[0]]=parseFloat(lines[i].split(/[ ]+/)[3]);
+				thick[lines[i].split(/[ ]+/)[0]]=parseFloat(lines[i].split(/[ ]+/)[4]);
 			}
-			
-			for(i in commn) {
-				$("#overlay").append(i+": "+commn[i]+"<br/>");
-			}
-			console.log(tsurf,thick);
+			$("#overlay").append("<br/>Regional Surface Area:<br />");
+			drawFingerprint(tsurf);
+			$("#overlay").append("<br/>Regional Cortical Thickness:<br />");
+			drawFingerprint(thick);
 		}
 	});
 }
-function drawFingerprint() {
+function makeSVG(tag, attrs) {
+    var el=document.createElementNS("http://www.w3.org/2000/svg",tag);
+    for (var k in attrs)
+        el.setAttribute(k, attrs[k]);
+    return el;
+}
+function drawFingerprint(data) {
 	
+	var svg=makeSVG('svg',{viewBox:'0,0,110,110',width:200,height:200});
+	$("#overlay").append(svg);
+
+	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:50,  cx:55,cy:55,fill:'none'}));
+	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:37.5,cx:55,cy:55,fill:'none'}));
+	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:25,  cx:55,cy:55,fill:'none'}));
+	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:12.5,cx:55,cy:55,fill:'none'}));
+	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:0.5, cx:55,cy:55,fill:'none'}));
+
+	var i,d=[],arr=Object.keys(data),n=arr.length,max;
+	i=0;
+	for(val in data) {
+		if(i==0)
+			max=data[val];
+		else if(data[val]>max)
+			max=data[val];
+		i++;
+	}
+	i=0;
+	for(val in data) {
+		d.push( ((i==0)?"M":"L")+(55+50*data[val]/max*Math.cos(2*Math.PI*i/n))+","+(55+50*data[val]/max*Math.sin(2*Math.PI*i/n)));
+		i++;
+	}
+	d.push("Z");
+	var path=makeSVG('path',{id:'path',stroke:'#ffffff','stroke-width':1,fill:'none'});
+	path.setAttributeNS(null,'d',d.join(" "));
+	$(svg).append(path);
 }
 function onWindowResize( event ) {
 	W = $("#container").width();
@@ -315,3 +352,24 @@ function updateUser() {
 		myOrigin.user=username;
 	}
 }
+
+/*
+ Bash script to compute population means and standard deviations.
+ 
+ One-liner:
+ vals=( NumVert SurfArea GrayVol ThickAvg ThickStd MeanCurv GausCurv FoldInd CurvInd );for ((k=0;k<9;k++)); do filename=${vals[k]};j=$((k+2));for ((i=54;i<88;i++)); do find . -name lh.aparc.stats|while read f; do awk 'NR=='$i'{print $1,$'$j'}' $f;done|awk 'BEING{s=0;ss=0;n=0}{n=n+1;split($0,arr," ");name=arr[1];s+=arr[2];ss+=arr[2]*arr[2]}END{print name,s/n,sqrt(ss/n-s*s/n/n)}'; done|tee $filename.txt;done
+ 
+ Human-readable:
+ vals=( NumVert SurfArea GrayVol ThickAvg ThickStd MeanCurv GausCurv FoldInd CurvInd )
+ for ((k=0;k<9;k++)); do
+ 	filename=${vals[k]}
+ 	j=$((k+2))
+ 	for ((i=54;i<88;i++)); do
+ 		find . -name lh.aparc.stats|while read f; do
+ 			awk 'NR=='$i'{print $1,$'$j'}' $f
+ 		done|awk 'BEGIN{s=0;ss=0;n=0}
+ 		          {n=n+1;split($0,arr," ");name=arr[1];s+=arr[2];ss+=arr[2]*arr[2]}
+ 		          END{print name,s/n,sqrt(ss/n-s*s/n/n)}'
+ 	done|tee $filename.txt
+ done
+*/

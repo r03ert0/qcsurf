@@ -39,8 +39,8 @@ html,body {
 	top:0;
 	left:0;
 	padding:5px;
-	width: calc( 100% -10px);
-	height: calc( 100% -10px);
+	width: calc( 100% - 10px );
+	height: calc( 100% - 10px );
 	color:white;
 	z-index:10;
     pointer-events:none;
@@ -72,6 +72,7 @@ html,body {
 	color:black;
 	border-collapse:collapse;
 	line-height:125%;
+	font-size:0.9rem;
 }
 #qctable td, #qctable th 
 {
