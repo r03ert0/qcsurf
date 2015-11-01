@@ -139,6 +139,7 @@ function loadMesh() {
 				((hemisphere=="lh")?"Left Hemisphere":"Right Hemisphere")+"<br/>"+
 				((surface=="pial")?"Pial Surface":"White Matter Surface")+"<br/>"
 			);
+			loadStats();
 		},
 		{useWorker: true,callbackProgress:function(obj){
 			var pct=parseInt(100*obj.loaded/obj.total);
@@ -148,6 +149,37 @@ function loadMesh() {
 				$("#overlay").html("Decompressing...");
 		}}
 	);
+}
+function loadStats() {
+	var hemisphere=($("#hemisphere .selected").attr('id')=="left")?"lh":"rh";
+	$.ajax({
+		type: "GET",
+		url:  "fs/"+sub[indexSelected].id+"/stats/"+hemisphere+".aparc.stats",
+		mimeType: 'text/plain; charset=x-user-defined',
+		dataType: "text",
+		success: function(stats) {
+			var lines=stats.split("\n");
+			var commn={};
+			var tsurf={};
+			var thick={};
+			var i;
+			commn["Total Vertices"]=parseInt(lines[18].split(",")[3]);
+			commn["Total Surface Area"]=parseFloat(lines[19].split(",")[3]);
+			commn["Mean Cortical Thickness"]=parseFloat(lines[20].split(",")[3]);
+			for(i=53;i<86;i++) {
+				tsurf[lines[i].split(/[ ]+/)[0]]=parseFloat(lines[i].split(/[ ]+/)[2]);
+				thick[lines[i].split(/[ ]+/)[0]]=parseFloat(lines[i].split(/[ ]+/)[3]);
+			}
+			
+			for(i in commn) {
+				$("#overlay").append(i+": "+commn[i]+"<br/>");
+			}
+			console.log(tsurf,thick);
+		}
+	});
+}
+function drawFingerprint() {
+	
 }
 function onWindowResize( event ) {
 	W = $("#container").width();
