@@ -106,6 +106,14 @@ h1 {
 	stroke: #ffffff;
 	stroke-width:3;
 }
+#text {
+	position:absolute;
+	padding:3;
+	color:white;
+	background-color:rgba(0,0,0,0.3);
+	z-index:20;
+    pointer-events:none;
+}
 
 .selected {
 	background-color:lightBlue !important;

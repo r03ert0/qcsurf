@@ -14,6 +14,8 @@ THREE.CTMLoader = function ( showStatus ) {
 THREE.CTMLoader.prototype = Object.create( THREE.Loader.prototype );
 THREE.CTMLoader.prototype.constructor = THREE.CTMLoader;
 
+THREE.CTMLoader.prototype.debug=0;
+
 // Load multiple CTM parts defined in JSON
 THREE.CTMLoader.prototype.loadParts = function( url, callback, parameters ) {
 	parameters = parameters || {};
@@ -66,7 +68,7 @@ THREE.CTMLoader.prototype.load = function( url, callback, parameters ) {
 	xhr.addEventListener("progress",callbackProgress, false);
 	
 	xhr.onreadystatechange = function() {
-		console.log("got ctm data",xhr.status,xhr.response)
+		if(THREE.CTMLoader.prototype.debug) console.log("got ctm data",xhr.status,xhr.response)
 		if ( xhr.readyState === 4 ) {
 			if ( xhr.status === 200 || xhr.status === 0 ) {
 				var binaryData = new Uint8Array(xhr.response);
@@ -81,7 +83,7 @@ THREE.CTMLoader.prototype.load = function( url, callback, parameters ) {
 							// console.log( "CTM data parse time [worker]: " + (e1-s) + " ms" );
 							scope.createModel( ctmFile, callback );
 							var e = Date.now();
-							console.log( "model load time [worker]: " + (e - e1) + " ms, total: " + (e - s));
+							if(THREE.CTMLoader.prototype.debug) console.log( "model load time [worker]: " + (e - e1) + " ms, total: " + (e - s));
 						}
 					};
 					worker.postMessage( { "data": binaryData, "offsets": offsets } );
