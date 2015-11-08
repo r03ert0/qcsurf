@@ -190,16 +190,17 @@ function makeSVG(tag, attrs) {
 }
 function drawFingerprint(data) {
 	
-	var svg=makeSVG('svg',{viewBox:'0,0,110,110',width:200,height:200});
+	var svg,r,i,d,arr,n,max,val,x,y,path;
+	
+	svg=makeSVG('svg',{viewBox:'0,0,110,110',width:200,height:200});
 	$("#overlay").append(svg);
 
-	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:50,  cx:55,cy:55,fill:'none'}));
-	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:37.5,cx:55,cy:55,fill:'none'}));
-	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:25,  cx:55,cy:55,fill:'none'}));
-	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:12.5,cx:55,cy:55,fill:'none'}));
-	$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.3,r:0.5, cx:55,cy:55,fill:'none'}));
+	// draw radar circles
+	for(r=0;r<=50;r+=12.5)
+		$(svg).append(makeSVG('circle',{stroke:'#ffffff','stroke-width':0.5,r:Math.max(r,0.5),cx:55,cy:55,fill:'none'}));
 
-	var i,d=[],arr=Object.keys(data),n=arr.length,max;
+	// get min/max data values
+	arr=Object.keys(data);
 	i=0;
 	for(val in data) {
 		if(i==0)
@@ -208,15 +209,47 @@ function drawFingerprint(data) {
 			max=data[val];
 		i++;
 	}
+
+	// draw fingerprint path
+	d=[];
 	i=0;
+	n=arr.length;
 	for(val in data) {
-		d.push( ((i==0)?"M":"L")+(55+50*data[val]/max*Math.cos(2*Math.PI*i/n))+","+(55+50*data[val]/max*Math.sin(2*Math.PI*i/n)));
+		x=55+50*data[val]/max*Math.cos(2*Math.PI*i/n);
+		y=55+50*data[val]/max*Math.sin(2*Math.PI*i/n);
+		d.push( ((i==0)?"M":"L")+x+","+y);
 		i++;
 	}
 	d.push("Z");
-	var path=makeSVG('path',{id:'path',stroke:'#ffffff','stroke-width':1,fill:'none'});
+	path=makeSVG('path',{id:'path',stroke:'#ffffff','stroke-width':1,fill:'none'});
 	path.setAttributeNS(null,'d',d.join(" "));
 	$(svg).append(path);
+
+	// draw region dots
+	i=0;
+	for(val in data) {
+		x=55+50*data[val]/max*Math.cos(2*Math.PI*i/n);
+		y=55+50*data[val]/max*Math.sin(2*Math.PI*i/n);
+		var reg=makeSVG('circle',{class:'region ',title:val,fill:'#ffffff',r:2,cx:x,cy:y});
+		$(svg).append(reg);
+		i++;
+	}
+	$(".region").css({"pointer-events":"auto"});
+	$(".region").hover(function(){
+		var x=$(this).attr('cx');
+		var y=$(this).attr('cy');
+		//var text=makeSVG('text',{fill:'#ffffff',x:x,y:y});
+		//$(text).text($(this).attr('title'));
+		//$(this).parent().append(text);
+		var svg=$(this).closest("svg")[0];
+		var m=svg.getScreenCTM();
+		var p=svg.createSVGPoint();
+		p.x=x;
+		p.y=y;
+		var pp=p.matrixTransform(m);
+		$("#plop").css({left:pp.x,top:pp.y});
+		$("#plop").text($(this).attr('title'));
+	});
 }
 function onWindowResize( event ) {
 	W = $("#container").width();

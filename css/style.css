@@ -100,6 +100,13 @@ h1 {
 	color:white;
 }
 
+/* Fingerprint */
+.region:hover {
+	fill: #ffffff;
+	stroke: #ffffff;
+	stroke-width:3;
+}
+
 .selected {
 	background-color:lightBlue !important;
 	color:black;
