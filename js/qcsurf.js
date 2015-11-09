@@ -209,6 +209,13 @@ function drawFingerprint(param) {
 	for(r=0;r<=50;r+=12.5)
 		$(svg).append(makeSVG('circle',{stroke:(r%25==0)?'#ffffff':'rgba(255,255,255,0.5)','stroke-width':0.5,r:Math.max(r,0.5),cx:55,cy:55,fill:'none'}));
 
+	// draw radar circles units
+	var txt=makeSVG('text',{x:50+12.5,y:57,"font-size":8,fill:"#afafaf"});
+	txt.innerHTML="-&sigma;&nbsp;&nbsp;&nbsp;&mu;&nbsp;&nbsp;&nbsp;+&sigma;";
+	rect = txt.getBBox();console.log(rect);
+	$(svg).append(makeSVG('rect',{x:50+12.5,y:51,width:40,height:8,fill:"rgba(0,0,0,0.5)"}));
+	$(svg).append(txt);
+	
 	// draw fingerprint path
 	d=[];
 	i=0;
