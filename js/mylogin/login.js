@@ -280,6 +280,6 @@ OK	No account found with that name or e-mail
 	Unable to send a new password. Please try again later
 	
 	
-* after registering, the user is automatically loged in. Wouldn't it be preferable to send
+* after registering, the user is automatically logged in. Wouldn't it be preferable to send
 the user a password by e-mail to verify that the link exists?
 */
